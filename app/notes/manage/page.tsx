@@ -48,7 +48,7 @@ export default function NotesManagePage() {
                 <span className="material-symbols-outlined text-sm">delete</span>刪除 {selected.length} 項
               </button>
             )}
-            <Link href="/notes" className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary-dim transition-colors">
+            <Link href="/notes?new=1" className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary-dim transition-colors">
               <span className="material-symbols-outlined text-sm">add</span>新增筆記
             </Link>
           </div>
@@ -106,7 +106,7 @@ function NoteRow({ note, selected, onToggleSelect, onTogglePin, onDelete, colorK
         className={`p-2 rounded-full transition-colors ${note.pinned ? 'text-primary' : 'text-on-surface-variant hover:text-primary'}`}>
         <span className={`material-symbols-outlined text-lg ${note.pinned ? 'fill-icon' : ''}`}>push_pin</span>
       </button>
-      <Link href="/notes" className="p-2 rounded-full text-on-surface-variant hover:text-primary transition-colors">
+      <Link href={`/notes?note=${note.id}`} className="p-2 rounded-full text-on-surface-variant hover:text-primary transition-colors">
         <span className="material-symbols-outlined text-lg">edit</span>
       </Link>
       <button onClick={() => onDelete(note.id)} className="p-2 rounded-full text-on-surface-variant hover:text-error transition-colors">

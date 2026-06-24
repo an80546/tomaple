@@ -14,13 +14,23 @@ const INIT_REMINDERS: Reminder[] = []
 export default function PreparationPage() {
   const [checks, setChecks] = useLocalStorage<CheckItem[]>('prep-checks', INIT_CHECKS)
   const [reminders, setReminders] = useLocalStorage<Reminder[]>('prep-reminders', INIT_REMINDERS)
+  const [showCheckForm, setShowCheckForm] = useState(false)
   const [showReminderForm, setShowReminderForm] = useState(false)
+  const [newCheck, setNewCheck] = useState('')
   const [newReminder, setNewReminder] = useState({ time: '', title: '', type: '每天' })
 
   const toggleCheck = (id: number) => setChecks(cs => cs.map(c => c.id === id ? { ...c, done: !c.done } : c))
   const resetChecks = () => setChecks(cs => cs.map(c => ({ ...c, done: false })))
+  const deleteCheck = (id: number) => setChecks(cs => cs.filter(c => c.id !== id))
   const toggleReminder = (id: number) => setReminders(rs => rs.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r))
   const deleteReminder = (id: number) => setReminders(rs => rs.filter(r => r.id !== id))
+
+  const addCheck = () => {
+    if (!newCheck.trim()) return
+    setChecks(cs => [...cs, { id: Date.now(), label: newCheck.trim(), done: false, icon: 'task_alt' }])
+    setNewCheck('')
+    setShowCheckForm(false)
+  }
 
   const addReminder = () => {
     if (!newReminder.title.trim()) return
@@ -36,8 +46,8 @@ export default function PreparationPage() {
   }
 
   const doneCount = checks.filter(c => c.done).length
-  const pct = Math.round((doneCount / checks.length) * 100)
-  const allDone = doneCount === checks.length
+  const pct = checks.length ? Math.round((doneCount / checks.length) * 100) : 0
+  const allDone = checks.length > 0 && doneCount === checks.length
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -57,6 +67,7 @@ export default function PreparationPage() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm text-on-surface-variant">{doneCount}/{checks.length}</span>
                   <button onClick={resetChecks} className="text-xs text-on-surface-variant hover:text-primary px-2 py-1 rounded-lg hover:bg-surface-container transition-colors">重置</button>
+                  <button onClick={() => setShowCheckForm(v => !v)} className="text-xs text-primary font-semibold px-2 py-1 rounded-lg hover:bg-primary-container/20 transition-colors">新增</button>
                 </div>
               </div>
 
@@ -65,21 +76,44 @@ export default function PreparationPage() {
                   style={{ width: `${pct}%` }} />
               </div>
 
+              {showCheckForm && (
+                <div className="p-3 rounded-xl bg-surface-container-low border border-outline-variant/20 space-y-2">
+                  <input value={newCheck} onChange={e => setNewCheck(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addCheck()} placeholder="檢查項目..." autoFocus
+                    className="w-full bg-surface-container-lowest rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary" />
+                  <div className="flex gap-2">
+                    <button onClick={addCheck} className="flex-1 py-1.5 bg-primary text-white rounded-lg text-xs font-bold">新增</button>
+                    <button onClick={() => setShowCheckForm(false)} className="flex-1 py-1.5 bg-surface-container rounded-lg text-xs">取消</button>
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-2">
                 {checks.map(item => (
-                  <button key={item.id} onClick={() => toggleCheck(item.id)}
-                    className={`w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all ${item.done ? 'bg-tertiary-container/30' : 'bg-surface-container-lowest hover:bg-surface-container-low'}`}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${item.done ? 'bg-tertiary text-white' : 'bg-surface-container text-on-surface-variant'}`}>
+                  <div key={item.id}
+                    className={`w-full flex items-center gap-4 p-4 rounded-xl text-left transition-all group ${item.done ? 'bg-tertiary-container/30' : 'bg-surface-container-lowest hover:bg-surface-container-low'}`}>
+                    <button onClick={() => toggleCheck(item.id)}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${item.done ? 'bg-tertiary text-white' : 'bg-surface-container text-on-surface-variant'}`}>
                       <span className={`material-symbols-outlined text-sm ${item.done ? 'fill-icon' : ''}`}>
                         {item.done ? 'check' : item.icon}
                       </span>
-                    </div>
-                    <span className={`text-sm font-medium transition-colors ${item.done ? 'line-through text-on-surface-variant' : 'text-on-surface'}`}>
+                    </button>
+                    <button onClick={() => toggleCheck(item.id)}
+                      className={`flex-1 text-left text-sm font-medium transition-colors ${item.done ? 'line-through text-on-surface-variant' : 'text-on-surface'}`}>
                       {item.label}
-                    </span>
-                  </button>
+                    </button>
+                    <button onClick={() => deleteCheck(item.id)} className="opacity-0 group-hover:opacity-100 p-1 text-on-surface-variant hover:text-error transition-all">
+                      <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
+                    </button>
+                  </div>
                 ))}
               </div>
+
+              {checks.length === 0 && (
+                <div className="rounded-xl bg-surface-container-lowest p-4 text-sm text-on-surface-variant">
+                  還沒有準備項目。新增常用檢查事項，之後就能一鍵重置重複使用。
+                </div>
+              )}
 
               {allDone && (
                 <div className="p-4 rounded-xl bg-tertiary-container flex items-center gap-3 animate-pulse">
@@ -142,6 +176,12 @@ export default function PreparationPage() {
                   </div>
                 ))}
               </div>
+
+              {reminders.length === 0 && (
+                <div className="rounded-xl bg-surface-container-lowest p-4 text-sm text-on-surface-variant">
+                  尚未建立提醒。新增時間提醒，幫自己把準備節奏固定下來。
+                </div>
+              )}
 
               <Link href="/pomodoro"
                 className="flex items-center justify-between p-5 rounded-xl bg-linear-to-br from-primary to-primary-container text-white hover:opacity-90 transition-opacity">

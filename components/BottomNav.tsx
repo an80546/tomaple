@@ -19,7 +19,7 @@ export default function BottomNav() {
         const nodes = []
         if (i === 2) {
           nodes.push(
-            <Link key="fab" href="/pomodoro" className="w-14 h-14 -mt-10 bg-linear-to-br from-primary to-primary-container rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
+            <Link key="fab" href="/notes?new=1" className="w-14 h-14 -mt-10 bg-linear-to-br from-primary to-primary-container rounded-2xl flex items-center justify-center text-white shadow-lg shadow-primary/30">
               <span className="material-symbols-outlined">add</span>
             </Link>
           )

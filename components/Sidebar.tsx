@@ -22,7 +22,7 @@ export default function Sidebar() {
             <span className="material-symbols-outlined fill-icon text-white text-xl">filter_vintage</span>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-on-surface tracking-tight font-headline">寧靜聖殿</h1>
+            <h1 className="text-xl font-bold text-on-surface tracking-tight font-headline">楓－寧靜聖殿</h1>
             <p className="text-xs text-on-surface-variant font-medium uppercase tracking-widest">保持當下</p>
           </div>
         </Link>
@@ -64,14 +64,14 @@ export default function Sidebar() {
             <span className="material-symbols-outlined text-xl">home</span>
             <span className="text-sm font-medium">主頁面</span>
           </Link>
-          <a href="#" className="flex items-center gap-4 text-on-surface-variant hover:text-primary transition-colors py-2">
+          <Link href="/preparation" className="flex items-center gap-4 text-on-surface-variant hover:text-primary transition-colors py-2">
             <span className="material-symbols-outlined text-xl">help</span>
-            <span className="text-sm font-medium">幫助</span>
-          </a>
-          <a href="#" className="flex items-center gap-4 text-on-surface-variant hover:text-primary transition-colors py-2">
+            <span className="text-sm font-medium">操作準備</span>
+          </Link>
+          <Link href="/notes/manage" className="flex items-center gap-4 text-on-surface-variant hover:text-primary transition-colors py-2">
             <span className="material-symbols-outlined text-xl">history</span>
-            <span className="text-sm font-medium">封存</span>
-          </a>
+            <span className="text-sm font-medium">筆記管理</span>
+          </Link>
         </div>
       </div>
     </aside>

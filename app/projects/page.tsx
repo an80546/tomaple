@@ -20,8 +20,11 @@ export default function ProjectsPage() {
   const [newGoal, setNewGoal] = useState('')
   const [newGoalDue, setNewGoalDue] = useState('')
   const [newGoalPriority, setNewGoalPriority] = useState<'高' | '中' | '低'>('中')
+  const [newMilestone, setNewMilestone] = useState('')
+  const [newMilestoneDate, setNewMilestoneDate] = useState('')
   const [showProjectForm, setShowProjectForm] = useState(false)
   const [showGoalForm, setShowGoalForm] = useState(false)
+  const [showMilestoneForm, setShowMilestoneForm] = useState(false)
 
   const toggleGoal = (id: number) =>
     setGoals(gs => gs.map(g => g.id === id ? { ...g, done: !g.done } : g))
@@ -48,6 +51,19 @@ export default function ProjectsPage() {
   }
 
   const removeGoal = (id: number) => setGoals(gs => gs.filter(g => g.id !== id))
+  const addMilestone = () => {
+    if (!newMilestone.trim()) return
+    setMilestones(ms => [...ms, {
+      id: Date.now(),
+      title: newMilestone.trim(),
+      date: newMilestoneDate || new Date().toISOString().slice(0, 10),
+      done: false,
+    }])
+    setNewMilestone('')
+    setNewMilestoneDate('')
+    setShowMilestoneForm(false)
+  }
+  const removeMilestone = (id: number) => setMilestones(ms => ms.filter(m => m.id !== id))
 
   const COLORS = ['primary', 'secondary', 'tertiary']
 
@@ -107,6 +123,11 @@ export default function ProjectsPage() {
                   </div>
                 </div>
               ))}
+              {projects.length === 0 && (
+                <div className="rounded-xl bg-surface-container-lowest p-4 text-sm text-on-surface-variant">
+                  尚未建立專案。按右上角加號建立第一個專案。
+                </div>
+              )}
             </section>
 
             {/* Goals */}
@@ -161,11 +182,39 @@ export default function ProjectsPage() {
                   </button>
                 </div>
               ))}
+              {goals.length === 0 && (
+                <div className="rounded-xl bg-surface-container-lowest p-4 text-sm text-on-surface-variant">
+                  還沒有目標。新增一個本週要完成的具體事項。
+                </div>
+              )}
             </section>
 
             {/* Milestones */}
             <section className="space-y-3">
-              <h2 className="text-lg font-bold font-headline">里程碑</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-bold font-headline">里程碑</h2>
+                <button onClick={() => setShowMilestoneForm(v => !v)}
+                  className="w-7 h-7 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dim transition-colors">
+                  <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                </button>
+              </div>
+
+              {showMilestoneForm && (
+                <div className="p-3 rounded-xl bg-surface-container-low border border-outline-variant/20 space-y-2">
+                  <input value={newMilestone} onChange={e => setNewMilestone(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && addMilestone()}
+                    placeholder="里程碑名稱..." autoFocus
+                    className="w-full bg-surface-container-lowest rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary" />
+                  <input value={newMilestoneDate} onChange={e => setNewMilestoneDate(e.target.value)}
+                    type="date"
+                    className="w-full bg-surface-container-lowest rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary" />
+                  <div className="flex gap-2">
+                    <button onClick={addMilestone} className="flex-1 py-1.5 bg-primary text-white rounded-lg text-xs font-bold">新增</button>
+                    <button onClick={() => setShowMilestoneForm(false)} className="flex-1 py-1.5 bg-surface-container rounded-lg text-xs">取消</button>
+                  </div>
+                </div>
+              )}
+
               <div className="relative">
                 <div className="absolute left-3 top-2 bottom-2 w-0.5 bg-surface-container-highest" />
                 <div className="space-y-3">
@@ -175,14 +224,26 @@ export default function ProjectsPage() {
                         className={`relative z-10 w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${m.done ? 'bg-primary border-primary' : 'bg-surface-container-lowest border-outline-variant hover:border-primary'}`}>
                         {m.done && <span className="material-symbols-outlined fill-icon text-white" style={{ fontSize: '12px' }}>check</span>}
                       </button>
-                      <div className={`flex-1 p-3 rounded-xl transition-colors ${m.done ? 'bg-primary-container/20' : 'bg-surface-container-lowest'}`}>
-                        <p className="text-sm font-semibold text-on-surface">{m.title}</p>
-                        <p className="text-xs text-on-surface-variant mt-0.5">{m.date}</p>
+                      <div className={`flex-1 p-3 rounded-xl transition-colors group ${m.done ? 'bg-primary-container/20' : 'bg-surface-container-lowest'}`}>
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <p className="text-sm font-semibold text-on-surface">{m.title}</p>
+                            <p className="text-xs text-on-surface-variant mt-0.5">{m.date}</p>
+                          </div>
+                          <button onClick={() => removeMilestone(m.id)} className="opacity-0 group-hover:opacity-100 p-1 text-on-surface-variant hover:text-error transition-all">
+                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+              {milestones.length === 0 && (
+                <div className="rounded-xl bg-surface-container-lowest p-4 text-sm text-on-surface-variant">
+                  沒有里程碑。用時間軸記錄專案關鍵節點。
+                </div>
+              )}
               <Link href="/notes" className="flex items-center justify-center gap-2 mt-4 p-4 rounded-xl bg-primary-container/20 hover:bg-primary-container/40 transition-colors">
                 <span className="material-symbols-outlined text-primary">book</span>
                 <p className="text-sm font-bold text-primary">查看進度筆記</p>

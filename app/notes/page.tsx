@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import TopBar from '@/components/TopBar'
 import { useLocalStorage } from '@/lib/useLocalStorage'
@@ -21,6 +21,7 @@ const color = (p: string) => PROJECT_COLORS[p] ?? 'primary'
 const EMPTY: Note = { id: 0, title: '', content: '', project: '', tags: '', pinned: false, date: '' }
 
 export default function NotesPage() {
+  const openedFromQuery = useRef(false)
   const [dbProjects] = useLocalStorage<Project[]>('projects', [])
   const [notes, setNotes] = useLocalStorage<Note[]>('notes', INIT_NOTES)
   const [filter, setFilter] = useState('全部')
@@ -39,6 +40,25 @@ export default function NotesPage() {
 
   const openNew = () => { setModal({ ...EMPTY, id: Date.now(), date: new Date().toISOString().slice(0, 10) }); setEditing(true) }
   const openView = (n: Note) => { setModal(n); setEditing(false) }
+
+  useEffect(() => {
+    if (openedFromQuery.current) return
+    const searchParams = new URLSearchParams(window.location.search)
+    const shouldCreate = searchParams.get('new') === '1'
+    const noteId = Number(searchParams.get('note'))
+    if (shouldCreate) {
+      openedFromQuery.current = true
+      openNew()
+      return
+    }
+    if (noteId) {
+      const found = notes.find(note => note.id === noteId)
+      if (found) {
+        openedFromQuery.current = true
+        openView(found)
+      }
+    }
+  }, [notes])
 
   const save = () => {
     if (!modal) return

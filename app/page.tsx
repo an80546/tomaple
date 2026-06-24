@@ -28,6 +28,7 @@ export default function HomePage() {
   const [pomodorosDone] = useLocalStorage('pomodoro-done', 0)
   const [totalMins] = useLocalStorage('pomodoro-total-mins', 0)
   const [history] = useLocalStorage<HistoryItem[]>('home-history', INIT_HISTORY)
+  const [compactHistory, setCompactHistory] = useState(false)
 
   interface Block {
     id: number; time: string; title: string; duration: string
@@ -48,6 +49,7 @@ export default function HomePage() {
 
   // Cells: leading nulls + days
   const cells: (number | null)[] = [...Array(firstDow).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)]
+  const visibleHistory = compactHistory ? history.slice(0, 3) : history
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -139,11 +141,24 @@ export default function HomePage() {
           <section className="col-span-12 lg:col-span-4 flex flex-col gap-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-bold font-headline">進度歷程</h2>
-              <span className="material-symbols-outlined text-on-surface-variant cursor-pointer">filter_list</span>
+              <button
+                type="button"
+                onClick={() => setCompactHistory(value => !value)}
+                className={`p-2 rounded-full transition-colors ${compactHistory ? 'bg-primary text-on-primary' : 'text-on-surface-variant hover:bg-surface-container'}`}
+                aria-label="切換歷程篩選"
+                title={compactHistory ? '顯示全部歷程' : '只顯示最近三筆'}
+              >
+                <span className="material-symbols-outlined">filter_list</span>
+              </button>
             </div>
 
             <div className="space-y-3">
-              {history.map(item => (
+              {visibleHistory.length === 0 && (
+                <div className="rounded-xl bg-surface-container-lowest p-5 text-sm text-on-surface-variant">
+                  還沒有歷程。完成番茄鐘、建立行程或整理筆記後，這裡會成為你的近期摘要。
+                </div>
+              )}
+              {visibleHistory.map(item => (
                 <div key={item.id} className={`bg-surface-container-lowest rounded-xl p-4 border-l-4 border-${item.borderColor} shadow-sm hover:-translate-y-0.5 transition-transform`}>
                   <div className="flex justify-between items-start mb-2">
                     <span className={`inline-block px-2 py-0.5 rounded-full bg-${item.tagColor} text-[10px] font-bold uppercase`}>{item.tag}</span>
@@ -177,7 +192,7 @@ export default function HomePage() {
       </main>
 
       {/* FAB */}
-      <Link href="/notes" className="fixed bottom-10 right-10 w-14 h-14 rounded-full bg-primary text-white shadow-2xl flex items-center justify-center hover:scale-105 transition-transform">
+      <Link href="/notes?new=1" className="fixed bottom-10 right-10 w-14 h-14 rounded-full bg-primary text-white shadow-2xl flex items-center justify-center hover:scale-105 transition-transform">
         <span className="material-symbols-outlined">add</span>
       </Link>
     </div>

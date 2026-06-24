@@ -7,11 +7,26 @@ interface Block {
   id: number; time: string; title: string; duration: string
   icon: string; color: string; bg: string; tags: string[]; done: boolean
 }
+interface Habit {
+  id: string
+  icon: string
+  label: string
+  value?: number
+  target?: number
+  done?: boolean
+  color: string
+}
 
 const INIT_BLOCKS: Block[] = []
+const INIT_HABITS: Habit[] = [
+  { id: 'water', icon: 'water_drop', label: '補充水分', value: 0, target: 8, color: 'secondary' },
+  { id: 'meditation', icon: 'self_improvement', label: '冥想', done: false, color: 'tertiary' },
+  { id: 'walk', icon: 'directions_walk', label: '散步', done: false, color: 'primary' },
+]
 
 export default function SchedulePage() {
   const [blocks, setBlocks] = useLocalStorage<Block[]>('schedule', INIT_BLOCKS)
+  const [habits, setHabits] = useLocalStorage<Habit[]>('schedule-habits', INIT_HABITS)
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ hour: '08', minute: '00', title: '', duration: '', tags: '' })
 
@@ -20,6 +35,14 @@ export default function SchedulePage() {
 
   const toggle = (id: number) => setBlocks(bs => bs.map(b => b.id === id ? { ...b, done: !b.done } : b))
   const remove = (id: number) => setBlocks(bs => bs.filter(b => b.id !== id))
+  const toggleHabit = (id: string) => setHabits(items => items.map(item => {
+    if (item.id !== id) return item
+    if (typeof item.value === 'number' && typeof item.target === 'number') {
+      const nextValue = item.value >= item.target ? 0 : item.value + 1
+      return { ...item, value: nextValue }
+    }
+    return { ...item, done: !item.done }
+  }))
 
   const add = () => {
     if (!form.title.trim()) return
@@ -160,20 +183,17 @@ export default function SchedulePage() {
           <div>
             <h3 className="text-base font-bold text-on-surface mb-3">習慣追蹤</h3>
             <div className="space-y-2">
-              {[
-                { icon: 'water_drop', label: '補充水分', value: '4/8', color: 'secondary' },
-                { icon: 'self_improvement', label: '冥想', done: true, color: 'tertiary' },
-                { icon: 'directions_walk', label: '散步', done: false, color: 'primary' },
-              ].map(h => (
-                <div key={h.label} className="flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl">
+              {habits.map(h => (
+                <button key={h.id} onClick={() => toggleHabit(h.id)}
+                  className="w-full flex items-center justify-between p-3 bg-surface-container-lowest rounded-xl text-left hover:bg-surface-container transition-colors">
                   <div className="flex items-center gap-2">
                     <span className={`material-symbols-outlined text-${h.color}`}>{h.icon}</span>
                     <span className="text-sm font-semibold">{h.label}</span>
                   </div>
-                  {'done' in h
-                    ? <span className={`material-symbols-outlined ${h.done ? 'fill-icon' : ''} text-${h.color} text-lg`}>{h.done ? 'check_circle' : 'radio_button_unchecked'}</span>
-                    : <span className="text-xs font-bold text-secondary">{h.value}</span>}
-                </div>
+                  {typeof h.value === 'number' && typeof h.target === 'number'
+                    ? <span className="text-xs font-bold text-secondary">{h.value}/{h.target}</span>
+                    : <span className={`material-symbols-outlined ${h.done ? 'fill-icon' : ''} text-${h.color} text-lg`}>{h.done ? 'check_circle' : 'radio_button_unchecked'}</span>}
+                </button>
               ))}
             </div>
           </div>

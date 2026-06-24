@@ -37,6 +37,7 @@ export default function PomodoroPage() {
 
   const [showSettings, setShowSettings] = useState(false)
   const [editSessions, setEditSessions] = useState([...sessions])
+  const [showMore, setShowMore] = useState(false)
 
   const saveSettings = () => {
     setSessions(editSessions)
@@ -62,7 +63,7 @@ export default function PomodoroPage() {
     setSessionIdx(idx)
     setSecondsLeft(sessions[idx].mins * 60)
     setRunning(false)
-  }, [])
+  }, [sessions])
 
   const handleDone = useCallback(() => {
     playBeep()
@@ -98,6 +99,15 @@ export default function PomodoroPage() {
   }
 
   const skip = () => switchSession((sessionIdx + 1) % sessions.length)
+  const resetStats = () => {
+    setPomodorosDone(0)
+    setTotalMins(0)
+    setShowMore(false)
+  }
+  const clearTask = () => {
+    setCurrentTask('')
+    setShowMore(false)
+  }
 
   const pomodorosThisCycle = pomodorosDone % 4
 
@@ -235,9 +245,31 @@ export default function PomodoroPage() {
               className="w-14 h-14 flex items-center justify-center rounded-2xl bg-surface-container-highest hover:bg-surface-container-high transition-all active:scale-95">
               <span className="material-symbols-outlined text-2xl">skip_next</span>
             </button>
-            <button className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors">
-              <span className="material-symbols-outlined">more_vert</span>
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowMore(value => !value)}
+                className="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                aria-label="開啟更多番茄鐘操作"
+              >
+                <span className="material-symbols-outlined">more_vert</span>
+              </button>
+              {showMore && (
+                <div className="absolute right-0 bottom-14 w-48 rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-lg p-2 text-sm">
+                  <button onClick={resetStats} className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-on-surface hover:bg-surface-container transition-colors">
+                    <span className="material-symbols-outlined text-lg text-primary">restart_alt</span>
+                    重設統計
+                  </button>
+                  <button onClick={clearTask} className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-on-surface hover:bg-surface-container transition-colors">
+                    <span className="material-symbols-outlined text-lg text-secondary">backspace</span>
+                    清空目前任務
+                  </button>
+                  <button onClick={() => { setMuted(true); setShowMore(false) }} className="w-full flex items-center gap-2 rounded-lg px-3 py-2 text-left text-on-surface hover:bg-surface-container transition-colors">
+                    <span className="material-symbols-outlined text-lg text-on-surface-variant">volume_off</span>
+                    靜音提醒
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Quote */}
