@@ -138,6 +138,21 @@
     background-color: var(--color-surface);
     color: var(--color-on-surface);
   }
+
+  select,
+  option {
+    background-color: var(--color-surface-container-lowest);
+    color: var(--color-on-surface);
+  }
+
+  select {
+    color-scheme: light;
+  }
+
+  html[data-theme="dark"] select {
+    color-scheme: dark;
+  }
+
   h1, h2, h3, h4 {
     font-family: 'Manrope', sans-serif;
   }

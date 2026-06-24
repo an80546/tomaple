@@ -149,7 +149,7 @@ export default function PomodoroPage() {
                           newS[i].mins = Number(e.target.value);
                           setEditSessions(newS);
                         }}
-                        className="bg-transparent px-2 py-1 text-sm outline-none cursor-pointer appearance-none w-16 text-center"
+                        className="bg-surface-container-lowest text-on-surface px-2 py-1 text-sm outline-none cursor-pointer appearance-none w-16 text-center"
                       >
                         {Array.from({ length: 60 }, (_, j) => j + 1).map((m) => (
                           <option key={m} value={m}>{m}</option>
@@ -160,7 +160,7 @@ export default function PomodoroPage() {
                 ))}
               </div>
               <div className="flex gap-2">
-                <button onClick={saveSettings} className="flex-1 bg-primary text-white py-1.5 rounded-lg text-sm font-bold">儲存</button>
+                <button onClick={saveSettings} className="flex-1 bg-primary text-on-primary py-1.5 rounded-lg text-sm font-bold">儲存</button>
                 <button onClick={() => setShowSettings(false)} className="flex-1 bg-surface-container text-on-surface py-1.5 rounded-lg text-sm">取消</button>
               </div>
             </div>
@@ -183,7 +183,7 @@ export default function PomodoroPage() {
           <div className="flex flex-wrap justify-center gap-2 mb-6 sm:mb-8 bg-surface-container rounded-2xl sm:rounded-full p-1">
             {sessions.map((s, i) => (
               <button key={i} onClick={() => switchSession(i)}
-                className={`min-h-10 px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-all ${sessionIdx === i ? 'bg-primary text-white shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}>
+                className={`min-h-10 px-4 sm:px-5 py-2 rounded-full text-sm font-semibold transition-all ${sessionIdx === i ? 'bg-primary text-on-primary shadow-sm' : 'text-on-surface-variant hover:text-on-surface'}`}>
                 {s.label}
               </button>
             ))}
@@ -244,7 +244,7 @@ export default function PomodoroPage() {
               <span className="material-symbols-outlined fill-icon text-2xl">stop</span>
             </button>
             <button onClick={() => setRunning(r => !r)}
-              className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-3xl bg-linear-to-br from-primary to-primary-container text-white shadow-xl shadow-primary/25 hover:scale-105 active:scale-95 transition-all">
+              className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-3xl bg-primary text-on-primary shadow-xl shadow-primary/25 hover:bg-primary-dim hover:scale-105 active:scale-95 transition-all">
               <span className="material-symbols-outlined text-4xl">{running ? 'pause' : 'play_arrow'}</span>
             </button>
             <button onClick={skip}
