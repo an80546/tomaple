@@ -4,16 +4,11 @@ import { FormEvent, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useTheme } from '@/components/ThemeProvider'
 import { useLocalStorage } from '@/lib/useLocalStorage'
+import { getBlocksForDate, ScheduleBlock, ScheduleByDate, toDateKey } from '@/lib/schedule'
 
 interface TopBarProps {
   title?: string
   subtitle?: string
-}
-
-interface ScheduleBlock {
-  id: number
-  title: string
-  done: boolean
 }
 
 interface Note {
@@ -35,12 +30,19 @@ export default function TopBar({ title = '寧靜流動', subtitle }: TopBarProps
   const { theme, toggleTheme } = useTheme()
   const [query, setQuery] = useState('')
   const [activePanel, setActivePanel] = useState<'search' | 'notifications' | 'settings' | null>(null)
-  const [blocks] = useLocalStorage<ScheduleBlock[]>('schedule', [])
+  const [blocksByDate] = useLocalStorage<ScheduleByDate>('schedule-by-date', {})
+  const [dailyBlocks] = useLocalStorage<ScheduleBlock[]>('schedule-daily', [])
+  const [legacyBlocks] = useLocalStorage<ScheduleBlock[]>('schedule', [])
   const [notes] = useLocalStorage<Note[]>('notes', [])
   const [pomodorosDone] = useLocalStorage('pomodoro-done', 0)
   const [totalMins] = useLocalStorage('pomodoro-total-mins', 0)
 
-  const pendingBlocks = blocks.filter(block => !block.done)
+  const todayKey = toDateKey(new Date())
+  const todayBlocks = [
+    ...getBlocksForDate(blocksByDate, dailyBlocks, todayKey),
+    ...legacyBlocks,
+  ]
+  const pendingBlocks = todayBlocks.filter(block => !block.done)
   const pinnedNotes = notes.filter(note => note.pinned)
 
   const results = useMemo(() => {

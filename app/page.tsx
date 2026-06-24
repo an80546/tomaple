@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import TopBar from '@/components/TopBar'
 import { useLocalStorage } from '@/lib/useLocalStorage'
+import { getBlocksForDate, ScheduleBlock, ScheduleByDate, toDateKey } from '@/lib/schedule'
 
 const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日']
 
@@ -30,17 +31,20 @@ export default function HomePage() {
   const [history] = useLocalStorage<HistoryItem[]>('home-history', INIT_HISTORY)
   const [compactHistory, setCompactHistory] = useState(false)
 
-  interface Block {
-    id: number; time: string; title: string; duration: string
-    icon: string; color: string; bg: string; tags: string[]; done: boolean
-  }
-
-  const [blocks] = useLocalStorage<Block[]>('schedule', [])
-  const nextTask = blocks.find(b => !b.done)
-
   const daysInMonth = getDaysInMonth(year, month)
   const firstDow = getFirstDayOfWeek(year, month)
   const isCurrentMonth = year === today.getFullYear() && month === today.getMonth()
+  const selectedDateKey = toDateKey(new Date(year, month, Math.min(selectedDay, daysInMonth)))
+  const todayKey = toDateKey(today)
+
+  const [blocksByDate] = useLocalStorage<ScheduleByDate>('schedule-by-date', {})
+  const [dailyBlocks] = useLocalStorage<ScheduleBlock[]>('schedule-daily', [])
+  const [legacyBlocks] = useLocalStorage<ScheduleBlock[]>('schedule', [])
+  const selectedBlocks = getBlocksForDate(blocksByDate, dailyBlocks, selectedDateKey)
+  const blocks = selectedDateKey === todayKey
+    ? [...selectedBlocks, ...legacyBlocks].sort((a, b) => a.time.localeCompare(b.time))
+    : selectedBlocks
+  const nextTask = blocks.find(b => !b.done)
 
   const prevMonth = () => { if (month === 0) { setYear(y => y - 1); setMonth(11) } else setMonth(m => m - 1) }
   const nextMonth = () => { if (month === 11) { setYear(y => y + 1); setMonth(0) } else setMonth(m => m + 1) }
@@ -103,7 +107,7 @@ export default function HomePage() {
                 {cells.map((day, i) => {
                   if (!day) return <div key={`empty-${i}`} />
                   const isToday = isCurrentMonth && day === today.getDate()
-                  const isSelected = day === selectedDay && isCurrentMonth
+                  const isSelected = day === selectedDay
                   return (
                     <div key={day} onClick={() => setSelectedDay(day)}
                       className="h-11 flex flex-col items-center justify-center relative cursor-pointer group">
@@ -127,13 +131,13 @@ export default function HomePage() {
                   <span className="material-symbols-outlined">{nextTask?.icon || 'event_note'}</span>
                 </div>
                 <div>
-                  <h3 className="font-bold text-on-surface">今日重點任務</h3>
+                  <h3 className="font-bold text-on-surface">{selectedDateKey === todayKey ? '今日重點任務' : '選取日期任務'}</h3>
                   <p className="text-sm text-on-surface-variant">
                     {nextTask ? `${nextTask.time} — ${nextTask.title}` : '目前無排定任務，享受平靜的一天。'}
                   </p>
                 </div>
               </div>
-              <Link href="/schedule" className="text-primary font-bold text-sm hover:underline">查看詳情</Link>
+              <Link href={`/schedule?date=${selectedDateKey}`} className="text-primary font-bold text-sm hover:underline">查看詳情</Link>
             </div>
           </section>
 
