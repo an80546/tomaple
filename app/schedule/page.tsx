@@ -164,12 +164,12 @@ export default function SchedulePage() {
     <div className="flex flex-col h-full overflow-hidden">
       <TopBar title="ToMaple" subtitle="每日行程" />
       <div className="flex flex-1 overflow-hidden">
-        <main className="flex-1 overflow-y-auto custom-scrollbar px-8 py-8">
+        <main className="flex-1 overflow-y-auto custom-scrollbar px-4 py-4 sm:px-6 md:px-8 md:py-8">
           <header className="mb-6">
             <p className="text-tertiary font-semibold tracking-widest uppercase text-xs mb-1">{dateStr}</p>
-            <div className="flex items-end justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
               <div>
-                <h1 className="text-4xl font-black text-on-surface font-headline">{selectedIsToday ? '今日行程' : '預排行程'}</h1>
+                <h1 className="text-3xl md:text-4xl font-black text-on-surface font-headline">{selectedIsToday ? '今日行程' : '預排行程'}</h1>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <button onClick={() => jumpToDate(addDays(selectedDate, -1))}
                     className="px-3 py-1.5 rounded-lg bg-surface-container text-sm font-semibold text-on-surface-variant hover:bg-surface-container-high transition-colors">
@@ -191,14 +191,14 @@ export default function SchedulePage() {
                 </div>
               </div>
               <button onClick={() => setShowForm(v => !v)}
-                className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary-dim transition-colors">
+                className="min-h-11 justify-center flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary-dim transition-colors">
                 <span className="material-symbols-outlined text-sm">add</span>新增
               </button>
             </div>
           </header>
 
-          <section className="mb-6 rounded-2xl bg-surface-container-lowest p-5 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
+          <section className="mb-6 rounded-2xl bg-surface-container-lowest p-3 sm:p-5 shadow-sm">
+            <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <h2 className="text-lg font-bold font-headline text-on-surface">行事曆</h2>
               <div className="flex items-center gap-2 text-on-surface-variant">
                 <button onClick={prevMonth} className="p-2 hover:bg-surface-container-low rounded-full transition-colors" aria-label="上一個月">
@@ -228,7 +228,7 @@ export default function SchedulePage() {
                   <button
                     key={dateKey}
                     onClick={() => selectCalendarDay(day)}
-                    className="relative flex h-12 flex-col items-center justify-center rounded-xl transition-colors hover:bg-surface-container"
+                    className="relative flex h-11 sm:h-12 flex-col items-center justify-center rounded-xl transition-colors hover:bg-surface-container"
                   >
                     <span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-medium transition-colors ${
                       isSelected ? 'bg-primary text-on-primary font-bold shadow-md shadow-primary/20'
@@ -247,13 +247,13 @@ export default function SchedulePage() {
           </section>
 
           {/* Stats */}
-          <div className="flex gap-3 mb-6">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
             {[
               { val: doneCount, label: '已完成', color: 'primary' },
               { val: blocks.length - doneCount, label: '待完成', color: 'secondary' },
               { val: `${pct}%`, label: '完成率', color: 'tertiary' },
             ].map(s => (
-              <div key={s.label} className="bg-surface-container-low px-5 py-3 rounded-xl">
+              <div key={s.label} className="bg-surface-container-low px-3 sm:px-5 py-3 rounded-xl text-center sm:text-left">
                 <p className={`text-xl font-bold text-${s.color}`}>{s.val}</p>
                 <p className="text-xs text-on-surface-variant">{s.label}</p>
               </div>
@@ -264,7 +264,7 @@ export default function SchedulePage() {
           {showForm && (
             <div className="mb-5 p-4 rounded-xl bg-surface-container-low border border-outline-variant/20 space-y-3">
               <h3 className="text-sm font-bold text-on-surface">新增行程</h3>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <div className="flex bg-surface-container-lowest rounded-lg border border-transparent focus-within:border-primary focus-within:ring-1 focus-within:ring-primary overflow-hidden">
                   <select value={form.hour} onChange={e => setForm(f => ({ ...f, hour: e.target.value }))}
                     className="bg-transparent px-2 py-2 text-sm outline-none cursor-pointer appearance-none text-center">
@@ -280,7 +280,7 @@ export default function SchedulePage() {
                   onKeyDown={e => e.key === 'Enter' && add()} placeholder="行程標題" autoFocus
                   className="flex-1 bg-surface-container-lowest rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary" />
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input value={form.duration} onChange={e => setForm(f => ({ ...f, duration: e.target.value }))}
                   placeholder="時長 (e.g. 60 分鐘)"
                   className="flex-1 bg-surface-container-lowest rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary" />
@@ -288,7 +288,7 @@ export default function SchedulePage() {
                   placeholder="標籤（逗號分隔）"
                   className="flex-1 bg-surface-container-lowest rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary" />
               </div>
-              <label className="flex items-center gap-2 rounded-lg bg-surface-container-lowest px-3 py-2 text-sm font-semibold text-on-surface">
+              <label className="flex items-start sm:items-center gap-2 rounded-lg bg-surface-container-lowest px-3 py-2 text-sm font-semibold text-on-surface">
                 <input
                   type="checkbox"
                   checked={form.recurring}
@@ -335,7 +335,7 @@ export default function SchedulePage() {
                         ))}
                       </div>
                       <button onClick={e => { e.stopPropagation(); remove(block) }}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-on-surface-variant hover:text-error transition-all rounded-full">
+                        className="opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1 text-on-surface-variant hover:text-error transition-all rounded-full">
                         <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span>
                       </button>
                     </div>

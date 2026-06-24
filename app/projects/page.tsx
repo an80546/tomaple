@@ -70,19 +70,19 @@ export default function ProjectsPage() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <TopBar title="項目目標" subtitle="進度追蹤" />
-      <main className="flex-1 overflow-y-auto custom-scrollbar p-8">
+      <main className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 md:p-8">
         <div className="max-w-5xl mx-auto">
-          <header className="mb-8 flex items-end justify-between">
-            <h1 className="text-3xl font-black font-headline text-on-surface">項目目標與進度</h1>
+          <header className="mb-6 md:mb-8 flex items-end justify-between">
+            <h1 className="text-2xl md:text-3xl font-black font-headline text-on-surface">項目目標與進度</h1>
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
             {/* Projects */}
             <section className="space-y-3">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold font-headline">進行中項目</h2>
                 <button onClick={() => setShowProjectForm(v => !v)}
-                  className="w-7 h-7 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dim transition-colors">
+                  className="w-10 h-10 md:w-7 md:h-7 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dim transition-colors">
                   <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
                 </button>
               </div>
@@ -106,7 +106,7 @@ export default function ProjectsPage() {
                     <h3 className="font-semibold text-sm text-on-surface">{p.name}</h3>
                     <div className="flex items-center gap-1">
                       <span className={`text-xs font-bold text-${COLORS[i % 3]}`}>{p.progress}%</span>
-                      <button onClick={() => removeProject(p.id)} className="opacity-0 group-hover:opacity-100 p-0.5 text-on-surface-variant hover:text-error transition-all">
+                      <button onClick={() => removeProject(p.id)} className="opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1 text-on-surface-variant hover:text-error transition-all">
                         <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span>
                       </button>
                     </div>
@@ -115,7 +115,7 @@ export default function ProjectsPage() {
                     <div className="h-full bg-linear-to-r from-primary to-primary-container rounded-full transition-all duration-300"
                       style={{ width: `${p.progress}%` }} />
                   </div>
-                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button onClick={() => setProgress(p.id, -5)} className="flex-1 py-1 bg-surface-container rounded text-xs font-medium hover:bg-surface-container-high transition-colors">-5%</button>
                     <button onClick={() => setProgress(p.id, -1)} className="px-2 py-1 bg-surface-container rounded text-xs hover:bg-surface-container-high transition-colors">-1</button>
                     <button onClick={() => setProgress(p.id, 1)} className="px-2 py-1 bg-surface-container rounded text-xs hover:bg-surface-container-high transition-colors">+1</button>
@@ -135,7 +135,7 @@ export default function ProjectsPage() {
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold font-headline">目標清單</h2>
                 <button onClick={() => setShowGoalForm(v => !v)}
-                  className="w-7 h-7 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dim transition-colors">
+                  className="w-10 h-10 md:w-7 md:h-7 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dim transition-colors">
                   <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
                 </button>
               </div>
@@ -145,7 +145,7 @@ export default function ProjectsPage() {
                   <input value={newGoal} onChange={e => setNewGoal(e.target.value)}
                     placeholder="目標名稱..." autoFocus
                     className="w-full bg-surface-container-lowest rounded-lg px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary" />
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input value={newGoalDue} onChange={e => setNewGoalDue(e.target.value)} placeholder="截止日期"
                       className="flex-1 bg-surface-container-lowest rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-1 focus:ring-primary" />
                     <select value={newGoalPriority} onChange={e => setNewGoalPriority(e.target.value as '高' | '中' | '低')}
@@ -177,7 +177,7 @@ export default function ProjectsPage() {
                       }`}>{g.priority}</span>
                     </div>
                   </div>
-                  <button onClick={() => removeGoal(g.id)} className="opacity-0 group-hover:opacity-100 p-0.5 text-on-surface-variant hover:text-error transition-all shrink-0">
+                  <button onClick={() => removeGoal(g.id)} className="opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1 text-on-surface-variant hover:text-error transition-all shrink-0">
                     <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span>
                   </button>
                 </div>
@@ -194,7 +194,7 @@ export default function ProjectsPage() {
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold font-headline">里程碑</h2>
                 <button onClick={() => setShowMilestoneForm(v => !v)}
-                  className="w-7 h-7 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dim transition-colors">
+                  className="w-10 h-10 md:w-7 md:h-7 flex items-center justify-center rounded-full bg-primary text-white hover:bg-primary-dim transition-colors">
                   <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
                 </button>
               </div>
@@ -230,7 +230,7 @@ export default function ProjectsPage() {
                             <p className="text-sm font-semibold text-on-surface">{m.title}</p>
                             <p className="text-xs text-on-surface-variant mt-0.5">{m.date}</p>
                           </div>
-                          <button onClick={() => removeMilestone(m.id)} className="opacity-0 group-hover:opacity-100 p-1 text-on-surface-variant hover:text-error transition-all">
+                          <button onClick={() => removeMilestone(m.id)} className="opacity-100 md:opacity-0 md:group-hover:opacity-100 p-1 text-on-surface-variant hover:text-error transition-all">
                             <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>close</span>
                           </button>
                         </div>

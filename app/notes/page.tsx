@@ -74,24 +74,24 @@ export default function NotesPage() {
       <TopBar title="進度筆記" subtitle="歷史記錄" />
 
       <div className="flex flex-1 overflow-hidden">
-        <main className="flex-1 overflow-y-auto custom-scrollbar p-8">
-          <header className="mb-5 flex items-end justify-between">
-            <h1 className="text-3xl font-black font-headline text-on-surface">進度筆記</h1>
-            <div className="flex gap-2">
-              <Link href="/notes/manage" className="flex items-center gap-2 bg-surface-container px-4 py-2 rounded-xl text-sm font-semibold hover:bg-surface-container-high transition-colors">
+        <main className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 md:p-8">
+          <header className="mb-5 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <h1 className="text-2xl md:text-3xl font-black font-headline text-on-surface">進度筆記</h1>
+            <div className="grid grid-cols-2 sm:flex gap-2">
+              <Link href="/notes/manage" className="min-h-11 justify-center flex items-center gap-2 bg-surface-container px-4 py-2 rounded-xl text-sm font-semibold hover:bg-surface-container-high transition-colors">
                 <span className="material-symbols-outlined text-sm">tune</span>管理
               </Link>
-              <button onClick={openNew} className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary-dim transition-colors">
+              <button onClick={openNew} className="min-h-11 justify-center flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary-dim transition-colors">
                 <span className="material-symbols-outlined text-sm">add</span>新增
               </button>
             </div>
           </header>
 
           {/* Filter */}
-          <div className="flex gap-2 mb-6 flex-wrap">
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-1 custom-scrollbar sm:flex-wrap">
             {projects.map(p => (
               <button key={p} onClick={() => setFilter(p)}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${filter === p ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}>
+                className={`shrink-0 min-h-10 px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${filter === p ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'}`}>
                 {p}
               </button>
             ))}
@@ -107,14 +107,14 @@ export default function NotesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {sorted.map(note => (
               <div key={note.id} onClick={() => openView(note)}
-                className={`p-5 rounded-xl bg-surface-container-lowest border-l-4 border-${color(note.project)} shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer`}>
+                className={`p-4 sm:p-5 rounded-xl bg-surface-container-lowest border-l-4 border-${color(note.project)} shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer`}>
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <span className={`text-[10px] font-bold uppercase tracking-wider text-${color(note.project)}`}>{note.project}</span>
                     <h3 className="font-bold text-on-surface mt-0.5">{note.title}</h3>
                   </div>
                   <button onClick={e => { e.stopPropagation(); togglePin(note.id) }}
-                    className={`p-1 rounded-full transition-colors ${note.pinned ? 'text-primary' : 'text-on-surface-variant/40 hover:text-primary'}`}>
+                    className={`min-w-10 min-h-10 flex items-center justify-center rounded-full transition-colors ${note.pinned ? 'text-primary' : 'text-on-surface-variant/60 hover:text-primary'}`}>
                     <span className={`material-symbols-outlined text-lg ${note.pinned ? 'fill-icon' : ''}`}>push_pin</span>
                   </button>
                 </div>
@@ -135,8 +135,8 @@ export default function NotesPage() {
 
       {/* Modal */}
       {modal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-inverse-surface/30 backdrop-blur-sm">
-          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-lg p-6 space-y-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-3 sm:p-4 bg-inverse-surface/30 backdrop-blur-sm">
+          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-lg max-h-[calc(100dvh-2rem)] overflow-y-auto p-4 sm:p-6 space-y-4">
             {editing ? (
               <>
                 <div className="flex items-center justify-between">
@@ -147,7 +147,7 @@ export default function NotesPage() {
                 </div>
                 <input value={modal.title} onChange={e => setModal(m => m && ({ ...m, title: e.target.value }))}
                   placeholder="標題" className="w-full bg-surface-container-low rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:ring-1 focus:ring-primary" />
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <select value={modal.project || activeProjects[0]} onChange={e => setModal(m => m && ({ ...m, project: e.target.value }))}
                     className="flex-1 bg-surface-container-low rounded-xl px-3 py-2 text-sm outline-none">
                     {activeProjects.map(p => <option key={p} value={p}>{p}</option>)}

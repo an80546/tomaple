@@ -4,6 +4,7 @@ import Link from 'next/link'
 import TopBar from '@/components/TopBar'
 import { useLocalStorage } from '@/lib/useLocalStorage'
 import { getBlocksForDate, ScheduleBlock, ScheduleByDate, toDateKey } from '@/lib/schedule'
+import { getWeekFocusData } from '@/lib/focusStats'
 
 const WEEKDAYS = ['一', '二', '三', '四', '五', '六', '日']
 
@@ -28,6 +29,7 @@ export default function HomePage() {
   const [selectedDay, setSelectedDay] = useState(today.getDate())
   const [pomodorosDone] = useLocalStorage('pomodoro-done', 0)
   const [totalMins] = useLocalStorage('pomodoro-total-mins', 0)
+  const [dailyMins] = useLocalStorage<Record<string, number>>('pomodoro-daily-mins', {})
   const [history] = useLocalStorage<HistoryItem[]>('home-history', INIT_HISTORY)
   const [compactHistory, setCompactHistory] = useState(false)
 
@@ -54,24 +56,26 @@ export default function HomePage() {
   // Cells: leading nulls + days
   const cells: (number | null)[] = [...Array(firstDow).fill(null), ...Array.from({ length: daysInMonth }, (_, i) => i + 1)]
   const visibleHistory = compactHistory ? history.slice(0, 3) : history
+  const weekFocus = getWeekFocusData(dailyMins, today)
+  const todayWeekIndex = (today.getDay() + 6) % 7
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <TopBar title="ToMaple" />
-      <main className="flex-1 overflow-y-auto custom-scrollbar p-8 md:p-10">
+      <main className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-6 md:p-10">
         {/* Header */}
-        <header className="mb-8 flex justify-between items-end">
+        <header className="mb-6 md:mb-8 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
           <div>
             <p className="text-on-surface-variant font-medium tracking-wide text-sm">歡迎回來</p>
-            <h1 className="text-4xl font-extrabold font-headline tracking-tight text-on-surface">主頁面</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold font-headline tracking-tight text-on-surface">主頁面</h1>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex gap-3">
-              <div className="bg-primary-container/30 px-4 py-2 rounded-xl text-center">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-primary-container/30 px-4 py-2 rounded-xl text-center min-w-0">
                 <p className="text-xl font-black text-primary">{pomodorosDone}</p>
                 <p className="text-xs text-on-surface-variant">今日番茄</p>
               </div>
-              <div className="bg-secondary-container/30 px-4 py-2 rounded-xl text-center">
+              <div className="bg-secondary-container/30 px-4 py-2 rounded-xl text-center min-w-0">
                 <p className="text-xl font-black text-secondary">{totalMins}</p>
                 <p className="text-xs text-on-surface-variant">專注分鐘</p>
               </div>
@@ -83,10 +87,10 @@ export default function HomePage() {
           </div>
         </header>
 
-        <div className="grid grid-cols-12 gap-8">
+        <div className="grid grid-cols-12 gap-5 md:gap-8">
           {/* Calendar */}
           <section className="col-span-12 lg:col-span-8 space-y-5">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
               <h2 className="text-xl font-bold font-headline">月曆視圖</h2>
               <div className="flex items-center gap-2 text-on-surface-variant">
                 <button onClick={prevMonth} className="p-2 hover:bg-surface-container-low rounded-full transition-colors">
@@ -99,7 +103,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            <div className="bg-surface-container-lowest rounded-2xl p-6 shadow-sm">
+            <div className="bg-surface-container-lowest rounded-2xl p-3 sm:p-5 md:p-6 shadow-sm">
               <div className="grid grid-cols-7 gap-y-2 text-center">
                 {WEEKDAYS.map(d => (
                   <div key={d} className="text-xs font-bold text-on-surface-variant/60 uppercase tracking-widest pb-2">週{d}</div>
@@ -125,19 +129,19 @@ export default function HomePage() {
             </div>
 
             {/* Today task card */}
-            <div className="bg-surface-container-low rounded-xl p-5 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-11 h-11 rounded-full bg-white flex items-center justify-center text-primary shadow-sm">
+            <div className="bg-surface-container-low rounded-xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-4 min-w-0">
+                <div className="w-11 h-11 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary shadow-sm shrink-0">
                   <span className="material-symbols-outlined">{nextTask?.icon || 'event_note'}</span>
                 </div>
-                <div>
+                <div className="min-w-0">
                   <h3 className="font-bold text-on-surface">{selectedDateKey === todayKey ? '今日重點任務' : '選取日期任務'}</h3>
                   <p className="text-sm text-on-surface-variant">
                     {nextTask ? `${nextTask.time} — ${nextTask.title}` : '目前無排定任務，享受平靜的一天。'}
                   </p>
                 </div>
               </div>
-              <Link href={`/schedule?date=${selectedDateKey}`} className="text-primary font-bold text-sm hover:underline">查看詳情</Link>
+              <Link href={`/schedule?date=${selectedDateKey}`} className="text-primary font-bold text-sm hover:underline min-h-11 inline-flex items-center">查看詳情</Link>
             </div>
           </section>
 
@@ -178,25 +182,28 @@ export default function HomePage() {
             <div className="bg-surface-container-lowest rounded-xl p-5 shadow-sm">
               <h3 className="text-sm font-bold text-on-surface mb-3">本週專注時長</h3>
               <div className="flex items-end justify-between gap-1.5 h-14">
-                {[40, 100, 70, 110, 90, 20, 15].map((h, i) => (
+                {weekFocus.heights.map((h, i) => (
                   <div key={i} className="flex-1 bg-surface-container-low rounded-full flex flex-col justify-end h-full">
-                    <div className={`rounded-full transition-all ${i === 3 ? 'bg-primary' : i < 5 ? 'bg-primary-container/70' : 'bg-surface-container-highest'}`}
+                    <div className={`rounded-full transition-all ${i === todayWeekIndex ? 'bg-primary' : weekFocus.minutes[i] > 0 ? 'bg-primary-container/70' : 'bg-surface-container-highest'}`}
                       style={{ height: `${h}%` }} />
                   </div>
                 ))}
               </div>
               <div className="flex justify-between mt-1">
-                {['一','二','三','四','五','六','日'].map(d => (
+                {weekFocus.labels.map((d) => (
                   <span key={d} className="flex-1 text-center text-[10px] text-on-surface-variant">{d}</span>
                 ))}
               </div>
+              <p className="mt-3 text-xs text-on-surface-variant">
+                本週共 {weekFocus.minutes.reduce((sum, value) => sum + value, 0)} 分鐘
+              </p>
             </div>
           </section>
         </div>
       </main>
 
       {/* FAB */}
-      <Link href="/notes?new=1" className="fixed bottom-10 right-10 w-14 h-14 rounded-full bg-primary text-white shadow-2xl flex items-center justify-center hover:scale-105 transition-transform">
+      <Link href="/notes?new=1" className="hidden md:flex fixed bottom-10 right-10 w-14 h-14 rounded-full bg-primary text-white shadow-2xl items-center justify-center hover:scale-105 transition-transform">
         <span className="material-symbols-outlined">add</span>
       </Link>
     </div>

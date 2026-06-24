@@ -59,8 +59,8 @@ export default function TopBar({ title = '寧靜流動', subtitle }: TopBarProps
   }
 
   return (
-    <header className="relative flex justify-between items-center px-4 sm:px-6 lg:px-10 py-4 w-full h-16 bg-surface border-b border-surface-container flex-shrink-0 z-40">
-      <div className="flex items-center gap-8 min-w-0">
+    <header className="relative flex justify-between items-center px-4 sm:px-6 lg:px-10 py-3 sm:py-4 w-full h-14 sm:h-16 bg-surface border-b border-surface-container flex-shrink-0 z-40">
+      <div className="flex items-center gap-4 sm:gap-8 min-w-0">
         <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-on-surface font-headline truncate">{title}</h2>
         {subtitle && <p className="text-sm text-on-surface-variant hidden lg:block truncate">{subtitle}</p>}
       </div>
@@ -80,6 +80,15 @@ export default function TopBar({ title = '寧靜流動', subtitle }: TopBarProps
             type="search"
           />
         </form>
+
+        <button
+          type="button"
+          aria-label="搜尋頁面"
+          onClick={() => setActivePanel(activePanel === 'search' ? null : 'search')}
+          className="sm:hidden p-2 text-on-surface-variant hover:bg-surface-container transition-colors rounded-full focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
+          <span className="material-symbols-outlined">search</span>
+        </button>
 
         <button
           type="button"
@@ -108,7 +117,17 @@ export default function TopBar({ title = '寧靜流動', subtitle }: TopBarProps
       </div>
 
       {activePanel === 'search' && (
-        <div className="absolute right-20 sm:right-40 top-14 w-72 rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-lg p-2">
+        <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-auto sm:right-40 sm:top-14 sm:w-72 rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-lg p-2">
+          <div className="sm:hidden p-2">
+            <input
+              value={query}
+              onChange={event => setQuery(event.target.value)}
+              className="w-full rounded-xl bg-surface-container-high px-3 py-3 text-base text-on-surface placeholder:text-on-surface-variant outline-none focus:ring-1 focus:ring-primary"
+              placeholder="搜尋頁面..."
+              type="search"
+              autoFocus
+            />
+          </div>
           <p className="px-3 py-2 text-xs font-semibold text-on-surface-variant">快速前往</p>
           <div className="space-y-1">
             {results.length > 0 ? results.map(item => (
@@ -129,7 +148,7 @@ export default function TopBar({ title = '寧靜流動', subtitle }: TopBarProps
       )}
 
       {activePanel === 'notifications' && (
-        <div className="absolute right-16 top-14 w-80 rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-lg p-4">
+        <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-auto sm:right-16 sm:top-14 sm:w-80 rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-lg p-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-bold text-on-surface">通知摘要</h3>
             <span className="text-xs text-on-surface-variant">{pendingBlocks.length + pinnedNotes.length} 則重點</span>
@@ -143,7 +162,7 @@ export default function TopBar({ title = '寧靜流動', subtitle }: TopBarProps
       )}
 
       {activePanel === 'settings' && (
-        <div className="absolute right-6 top-14 w-80 rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-lg p-4">
+        <div className="fixed inset-x-3 top-16 sm:absolute sm:inset-auto sm:right-6 sm:top-14 sm:w-80 rounded-xl border border-outline-variant/30 bg-surface-container-lowest shadow-lg p-4">
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
               <h3 className="text-sm font-bold text-on-surface">偏好設定</h3>
