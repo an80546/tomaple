@@ -22,7 +22,7 @@ export default function Sidebar() {
             <span className="material-symbols-outlined fill-icon text-white text-xl">filter_vintage</span>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-on-surface tracking-tight font-headline">楓－寧靜聖殿</h1>
+            <h1 className="text-xl font-bold text-on-surface tracking-tight font-headline">楓－專注時刻</h1>
             <p className="text-xs text-on-surface-variant font-medium uppercase tracking-widest">保持當下</p>
           </div>
         </Link>
